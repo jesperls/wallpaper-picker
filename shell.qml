@@ -7,7 +7,7 @@ import QtQuick.Controls
 ShellRoot {
     id: root
 
-    // Theme colors from environment (injected by Nix wrapper)
+    // Theme colors
     readonly property string bgColor: Quickshell.env("WP_BG") || "#0f1117"
     readonly property string surfaceColor: Quickshell.env("WP_SURFACE") || "#191b21"
     readonly property string accentColor: Quickshell.env("WP_ACCENT") || "#d47fa6"
@@ -37,17 +37,12 @@ ShellRoot {
 
         WlrLayershell.layer: WlrLayer.Overlay
         WlrLayershell.namespace: "wallpaper-picker"
-        WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
+        WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive // Exclusive focus to capture Escape
 
-        // Semi-transparent backdrop
-        Rectangle {
+        // Click outside to close (transparent background, no dimming)
+        MouseArea {
             anchors.fill: parent
-            color: Qt.rgba(0, 0, 0, 0.5)
-
-            MouseArea {
-                anchors.fill: parent
-                onClicked: Qt.quit()
-            }
+            onClicked: Qt.quit()
         }
 
         // Center the picker dialog
@@ -62,54 +57,38 @@ ShellRoot {
             border.width: 1
             clip: true
 
+            // Prevent clicks on the dialog from closing the window
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true,
+                onClicked: {} // Swallow clicks
+            }
+
             ColumnLayout {
                 anchors.fill: parent
                 anchors.margins: 0
                 spacing: 0
 
-                // Search bar
+                // Header / Debug info
                 Rectangle {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 50
+                    Layout.preferredHeight: 40
                     color: "transparent"
-
-                    Rectangle {
-                        anchors.fill: parent
-                        anchors.margins: 10
-                        anchors.bottomMargin: 4
-                        radius: root.rounding / 2
-                        color: root.surfaceColor
-
-                        TextInput {
-                            id: searchInput
-                            anchors.fill: parent
-                            anchors.leftMargin: 14
-                            anchors.rightMargin: 14
-                            verticalAlignment: TextInput.AlignVCenter
-                            color: root.textColor
-                            font.pixelSize: 14
-                            font.family: "Noto Sans"
-                            clip: true
-                            focus: true
-
-                            Text {
-                                anchors.fill: parent
-                                verticalAlignment: Text.AlignVCenter
-                                text: "Search wallpapers…"
-                                color: root.mutedColor
-                                font: searchInput.font
-                                visible: !searchInput.text && !searchInput.activeFocus
-                            }
-                        }
+                    
+                    Text {
+                        anchors.centerIn: parent
+                        text: "Scanning: " + root.wallpaperDir
+                        color: root.mutedColor
+                        font.pixelSize: 12
                     }
                 }
 
                 // Wallpaper grid
                 WallpaperGrid {
+                    id: grid
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     Layout.margins: 6
-                    searchText: searchInput.text
                     wallpaperDir: root.wallpaperDir
                     bgColor: root.bgColor
                     surfaceColor: root.surfaceColor
@@ -118,6 +97,7 @@ ShellRoot {
                     mutedColor: root.mutedColor
                     borderColor: root.borderColor
                     rounding: root.rounding
+                    focus: true // Give grid focus for keyboard nav
                 }
             }
         }

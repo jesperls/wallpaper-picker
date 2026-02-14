@@ -9,7 +9,6 @@ import Qt.labs.folderlistmodel
 GridView {
     id: gridView
 
-    required property string searchText
     required property string wallpaperDir
     required property string bgColor
     required property string surfaceColor
@@ -31,10 +30,9 @@ GridView {
     clip: true
     boundsBehavior: Flickable.StopAtBounds
 
-    // Use FolderListModel to scan for image files
-    FolderListModel {
+    // Use FolderListModel directly since we don't need filtering anymore
+    model: FolderListModel {
         id: folderModel
-
         folder: "file://" + gridView.wallpaperDir
         nameFilters: ["*.png", "*.jpg", "*.jpeg", "*.webp", "*.bmp"]
         showDirs: false
@@ -42,50 +40,28 @@ GridView {
         sortField: FolderListModel.Name
     }
 
-    // Filtered model based on search
-    model: filteredModel
-
-    ListModel {
-        id: filteredModel
-    }
-
-    // Re-filter when search text or source model changes
-    onSearchTextChanged: filterModel()
-    Connections {
-        target: folderModel
-        function onCountChanged() { gridView.filterModel() }
-    }
-
-    function filterModel(): void {
-        filteredModel.clear();
-        const query = searchText.toLowerCase();
-        for (let i = 0; i < folderModel.count; i++) {
-            const name = folderModel.get(i, "fileName");
-            const url = folderModel.get(i, "fileURL").toString();
-            // Convert file:// URL to absolute path for hyprpaper
-            const path = url.replace(/^file:\/\//, "");
-            if (!query || name.toLowerCase().includes(query)) {
-                filteredModel.append({ fileName: name, filePath: path, fileUrl: url });
-            }
-        }
-    }
-
-    // Initial population when folder loads
-    Component.onCompleted: {
-        Qt.callLater(filterModel);
-    }
-
     delegate: WallpaperItem {
         required property int index
         required property var model
+        required property string fileName
+        required property string filePath
+        required property string fileURL
 
         width: gridView.totalItemWidth
         height: gridView.totalItemHeight
         thumbWidth: gridView.thumbWidth
         thumbHeight: gridView.thumbHeight
-        filePath: model.filePath ?? ""
-        fileUrl: model.fileUrl ?? ""
-        fileName: model.fileName ?? ""
+        
+        // FolderListModel provides these roles directly
+        filePath: {
+             // FolderListModel usually returns file URL in filePath role or fileURL role depending on Qt version
+             // Let's safe-guard. If model.fileURL exists, use it.
+             let url = model.fileURL || ("file://" + gridView.wallpaperDir + "/" + fileName);
+             return url.toString().replace(/^file:\/\//, "");
+        }
+        fileUrl: model.fileURL ? model.fileURL.toString() : ("file://" + gridView.wallpaperDir + "/" + fileName)
+        fileName: model.fileName
+        
         isSelected: gridView.currentIndex === index
         accentColor: gridView.accentColor
         surfaceColor: gridView.surfaceColor
@@ -101,7 +77,7 @@ GridView {
         }
     }
 
-    // Hyprpaper IPC processes — chain: preload → set wallpaper → unload unused → quit
+    // Hyprpaper IPC processes
     Process {
         id: preloadProc
         onExited: (exitCode, exitStatus) => {
