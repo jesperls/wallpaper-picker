@@ -12,7 +12,11 @@ let
   colors = osConfig.mySystem.theme.colors;
   rounding = osConfig.mySystem.theme.rounding;
 
-  # Build the picker package with theme colors baked in
+  expandedWallpaperDir =
+    if lib.hasPrefix "~" cfg.wallpaperDir
+    then "${config.home.homeDirectory}${lib.removePrefix "~" cfg.wallpaperDir}"
+    else cfg.wallpaperDir;
+
   pickerPkg = cfg.package.override {
     themeEnv = {
       WP_ACCENT = colors.accent;
@@ -23,26 +27,12 @@ let
       WP_BORDER = colors.border;
       WP_ROUNDING = toString rounding;
     };
-    wallpaperDir = cfg.wallpaperDir;
-  };
-
-  # Wallpaper manager script — uses the picker for 'pick' and hyprpaper for everything else
-  wallpaperManager = pkgs.writeShellApplication {
-    name = "wallpaper-manager";
-    runtimeInputs = with pkgs; [
-      hyprpaper
-      hyprland
-      jq
-      findutils
-      coreutils
-      pickerPkg
-    ];
-    text = builtins.readFile "${self}/wallpaper-manager.sh";
+    wallpaperDir = expandedWallpaperDir;
   };
 in
 {
   options.programs.wallpaperPicker = with lib; {
-    enable = mkEnableOption "QuickShell wallpaper picker with wallpaper management";
+    enable = mkEnableOption "Wallpaper picker and manager for Hyprland";
 
     package = mkOption {
       type = types.package;
@@ -62,27 +52,24 @@ in
       description = "Whether to enable and configure hyprpaper.";
     };
 
-    keybinds.enable = mkOption {
-      type = types.bool;
-      default = true;
-      description = "Whether to add wallpaper keybinds to Hyprland.";
-    };
+    keybinds = {
+      enable = mkEnableOption "wallpaper keybinds in Hyprland" // { default = true; };
 
-    keybinds.cycle = mkOption {
-      type = types.str;
-      default = "$mainMod SHIFT, W";
-      description = "Keybind for cycling wallpapers.";
-    };
+      cycle = mkOption {
+        type = types.str;
+        default = "$mainMod SHIFT, W";
+        description = "Keybind for cycling wallpapers.";
+      };
 
-    keybinds.pick = mkOption {
-      type = types.str;
-      default = "$mainMod CTRL, W";
-      description = "Keybind for opening the wallpaper picker.";
+      pick = mkOption {
+        type = types.str;
+        default = "$mainMod CTRL, W";
+        description = "Keybind for opening the wallpaper picker.";
+      };
     };
   };
 
   config = lib.mkIf cfg.enable {
-    # Hyprpaper service
     services.hyprpaper = lib.mkIf cfg.hyprpaper.enable {
       enable = true;
       settings = {
@@ -91,21 +78,16 @@ in
       };
     };
 
-    # Hyprland keybinds
-    wayland.windowManager.hyprland.settings.bind = lib.mkIf cfg.keybinds.enable [
-      "${cfg.keybinds.cycle}, exec, wallpaper-manager"
-      "${cfg.keybinds.pick}, exec, wallpaper-manager pick"
-    ];
+    wayland.windowManager.hyprland.settings = lib.mkIf cfg.keybinds.enable {
+      bind = [
+        "${cfg.keybinds.cycle}, exec, wallpaper-manager cycle"
+        "${cfg.keybinds.pick}, exec, wallpaper-manager pick"
+      ];
+      exec-once = lib.mkIf cfg.hyprpaper.enable [
+        "wallpaper-manager init"
+      ];
+    };
 
-    # Hyprland exec-once for wallpaper restore on login
-    wayland.windowManager.hyprland.settings.exec-once = lib.mkIf cfg.hyprpaper.enable [
-      "wallpaper-manager init"
-    ];
-
-    # Packages
-    home.packages = [
-      wallpaperManager
-      pickerPkg
-    ];
+    home.packages = [ pickerPkg ];
   };
 }

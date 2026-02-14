@@ -5,6 +5,10 @@
   quickshell,
   hyprland,
   hyprpaper,
+  jq,
+  coreutils,
+  findutils,
+  bash,
   themeEnv ? { },
   wallpaperDir ? null,
 }:
@@ -15,7 +19,6 @@ stdenvNoCC.mkDerivation {
   src = ./..;
 
   nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ quickshell ];
 
   dontBuild = true;
 
@@ -24,6 +27,10 @@ stdenvNoCC.mkDerivation {
       runtimeDeps = [
         hyprland
         hyprpaper
+        jq
+        coreutils
+        findutils
+        bash
       ];
       envFlags = lib.concatStringsSep " " (
         lib.mapAttrsToList (name: value: "--set ${name} \"${value}\"") themeEnv
@@ -33,22 +40,26 @@ stdenvNoCC.mkDerivation {
     ''
       runHook preInstall
 
-      mkdir -p $out/share/wallpaper-picker
-      cp shell.qml $out/share/wallpaper-picker/
-      cp WallpaperGrid.qml $out/share/wallpaper-picker/
-      cp WallpaperItem.qml $out/share/wallpaper-picker/
+      mkdir -p $out/share/wallpaper-picker $out/bin
+
+      cp shell.qml WallpaperGrid.qml WallpaperItem.qml $out/share/wallpaper-picker/
 
       makeWrapper ${quickshell}/bin/qs $out/bin/wallpaper-picker \
-        --prefix PATH : "${lib.makeBinPath runtimeDeps}" \
+        --prefix PATH : "$out/bin:${lib.makeBinPath runtimeDeps}" \
         ${envFlags} \
         --add-flags "-p $out/share/wallpaper-picker"
+
+      install -Dm755 wallpaper-manager.sh $out/bin/wallpaper-manager
+      wrapProgram $out/bin/wallpaper-manager \
+        --prefix PATH : "$out/bin:${lib.makeBinPath runtimeDeps}" \
+        ${envFlags}
 
       runHook postInstall
     '';
 
   meta = {
-    description = "QuickShell GUI wallpaper picker for Hyprland";
+    description = "Wallpaper picker and manager for Hyprland";
     license = lib.licenses.mit;
-    mainProgram = "wallpaper-picker";
+    mainProgram = "wallpaper-manager";
   };
 }

@@ -1,5 +1,5 @@
 {
-  description = "QuickShell wallpaper picker GUI";
+  description = "Wallpaper picker and manager for Hyprland";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";

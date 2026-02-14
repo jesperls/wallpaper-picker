@@ -6,7 +6,6 @@ Item {
     required property int thumbWidth
     required property int thumbHeight
     required property string filePath
-    required property string fileUrl
     required property string fileName
     required property bool isSelected
     required property string accentColor
@@ -17,22 +16,18 @@ Item {
 
     signal clicked()
 
-    // Strip extension from filename for display
     readonly property string displayName: {
         const idx = fileName.lastIndexOf(".");
         return idx > 0 ? fileName.substring(0, idx) : fileName;
     }
 
-    // Hover state
     property bool hovered: false
 
-    // Parse accent color once for reuse
     readonly property real accentR: parseInt(accentColor.substring(1, 3), 16) / 255
     readonly property real accentG: parseInt(accentColor.substring(3, 5), 16) / 255
     readonly property real accentB: parseInt(accentColor.substring(5, 7), 16) / 255
 
     Rectangle {
-        id: card
         anchors.fill: parent
         anchors.margins: 4
         radius: root.rounding / 2
@@ -46,14 +41,9 @@ Item {
                 : "transparent")
         border.width: 2
 
-        Behavior on color {
-            ColorAnimation { duration: 150 }
-        }
-        Behavior on border.color {
-            ColorAnimation { duration: 150 }
-        }
+        Behavior on color { ColorAnimation { duration: 150 } }
+        Behavior on border.color { ColorAnimation { duration: 150 } }
 
-        // Thumbnail
         Rectangle {
             id: thumbContainer
             anchors.top: parent.top
@@ -68,31 +58,26 @@ Item {
             Image {
                 id: thumbImage
                 anchors.fill: parent
-                source: root.fileUrl
+                source: "file://" + root.filePath
                 fillMode: Image.PreserveAspectCrop
                 asynchronous: true
                 smooth: true
                 cache: true
                 sourceSize.width: root.thumbWidth * 2
                 sourceSize.height: root.thumbHeight * 2
-
-                // Fade in animation
                 opacity: status === Image.Ready ? 1 : 0
-                Behavior on opacity {
-                    NumberAnimation { duration: 200 }
-                }
+
+                Behavior on opacity { NumberAnimation { duration: 200 } }
             }
 
-            // Loading placeholder
             Text {
                 anchors.centerIn: parent
-                text: "🖼"
+                text: "\uD83D\uDDBC"
                 font.pixelSize: 32
                 visible: thumbImage.status !== Image.Ready
                 opacity: 0.3
             }
 
-            // Scale animation on hover
             transform: Scale {
                 origin.x: thumbContainer.width / 2
                 origin.y: thumbContainer.height / 2
@@ -104,9 +89,7 @@ Item {
             }
         }
 
-        // Filename label
         Text {
-            id: nameLabel
             anchors.top: thumbContainer.bottom
             anchors.topMargin: 4
             anchors.horizontalCenter: parent.horizontalCenter
@@ -116,7 +99,6 @@ Item {
             text: root.displayName
             color: root.textColor
             font.pixelSize: 12
-            font.family: "Noto Sans"
         }
 
         MouseArea {
