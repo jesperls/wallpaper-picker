@@ -92,8 +92,8 @@ GridView {
             // Unload unused is safe to run after setting
             cmds.push("hyprctl hyprpaper unload unused");
             
-            // Run all in sh
-            const fullCmd = cmds.join(" && ");
+            // Run all in sh, use ; to ignore potential preload errors (e.g. already loaded)
+            const fullCmd = cmds.join("; ");
             
             // Use Process to run the chain
             wallpaperProc.command = ["sh", "-c", fullCmd];
@@ -105,10 +105,13 @@ GridView {
         id: wallpaperProc
         onExited: (exitCode, exitStatus) => {
             console.log("Wallpaper set finished with code:", exitCode);
-            Qt.quit();
+            if (exitCode === 0) Qt.quit();
+             // Even if non-zero, we might want to quit if it was just a preload error, but let's keep it open or quit?
+             // Actually, if it worked partially, we likely want to quit.
+             Qt.quit();
         }
     }
-
+    
     // Scroll bar
     ScrollBar.vertical: ScrollBar {
         policy: ScrollBar.AsNeeded
@@ -121,6 +124,7 @@ GridView {
     }
 
     // Keyboard navigation
+    Keys.onEscapePressed: Qt.quit()
     Keys.onUpPressed: moveCurrentIndexUp()
     Keys.onDownPressed: moveCurrentIndexDown()
     Keys.onLeftPressed: moveCurrentIndexLeft()
