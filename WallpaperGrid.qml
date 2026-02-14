@@ -67,31 +67,44 @@ GridView {
 
         onClicked: {
             gridView.currentIndex = index;
-            preloadProc.command = ["hyprctl", "hyprpaper", "preload", filePath];
-            setWallpaperProc.command = ["hyprctl", "hyprpaper", "wallpaper", "," + filePath];
-            preloadProc.running = true;
+            
+            // Gather all screen names
+            let monitors = [];
+            for (let i = 0; i < Quickshell.screens.length; i++) {
+                monitors.push(Quickshell.screens[i].name);
+            }
+            
+            console.log("Setting wallpaper for monitors:", monitors.join(", "));
+            console.log("Image:", filePath);
+
+            // Construct shell command chain
+            // 1. Preload
+            // 2. Set for each monitor
+            // 3. Unload unused
+            // 4. Quit
+            
+            let cmds = [`hyprctl hyprpaper preload "${filePath}"`];
+            
+            monitors.forEach(mon => {
+                cmds.push(`hyprctl hyprpaper wallpaper "${mon},${filePath}"`);
+            });
+            
+            // Unload unused is safe to run after setting
+            cmds.push("hyprctl hyprpaper unload unused");
+            
+            // Run all in sh
+            const fullCmd = cmds.join(" && ");
+            
+            // Use Process to run the chain
+            wallpaperProc.command = ["sh", "-c", fullCmd];
+            wallpaperProc.running = true;
         }
     }
 
-    // Hyprpaper IPC processes
     Process {
-        id: preloadProc
+        id: wallpaperProc
         onExited: (exitCode, exitStatus) => {
-            setWallpaperProc.running = true;
-        }
-    }
-
-    Process {
-        id: setWallpaperProc
-        onExited: (exitCode, exitStatus) => {
-            unloadProc.running = true;
-        }
-    }
-
-    Process {
-        id: unloadProc
-        command: ["hyprctl", "hyprpaper", "unload", "unused"]
-        onExited: (exitCode, exitStatus) => {
+            console.log("Wallpaper set finished with code:", exitCode);
             Qt.quit();
         }
     }
