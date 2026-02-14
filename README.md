@@ -42,11 +42,14 @@ programs.wallpaperPicker = {
   };
   theme = {
     accent = "#d47fa6";
+    accent2 = "#e3b17a";
     background = "#0f1117";
     surface = "#191b21";
+    surfaceAlt = "#13141a";
     text = "#e6e3e8";
     muted = "#b3adb9";
     border = "#2a2d36";
+    shadow = "#08090d";
     rounding = 10;                        # default
   };
 };
@@ -73,15 +76,18 @@ For per-monitor wallpapers when cycling, create subdirectories named after your 
 
 All colors are configurable via `programs.wallpaperPicker.theme`. Any unset color (`null`) uses the built-in default from `shell.qml`.
 
-| Option       | Env variable   | Default     |
-|--------------|----------------|-------------|
-| `accent`     | `WP_ACCENT`    | `#d47fa6`   |
-| `background` | `WP_BG`        | `#0f1117`   |
-| `surface`    | `WP_SURFACE`   | `#191b21`   |
-| `text`       | `WP_TEXT`      | `#e6e3e8`   |
-| `muted`      | `WP_MUTED`     | `#b3adb9`   |
-| `border`     | `WP_BORDER`    | `#2a2d36`   |
-| `rounding`   | `WP_ROUNDING`  | `10`        |
+| Option       | Env variable     | Default     |
+|--------------|------------------|-------------|
+| `accent`     | `WP_ACCENT`      | `#d47fa6`   |
+| `accent2`    | `WP_ACCENT2`     | `#e3b17a`   |
+| `background` | `WP_BG`          | `#0f1117`   |
+| `surface`    | `WP_SURFACE`     | `#191b21`   |
+| `surfaceAlt` | `WP_SURFACE_ALT` | `#13141a`   |
+| `text`       | `WP_TEXT`        | `#e6e3e8`   |
+| `muted`      | `WP_MUTED`       | `#b3adb9`   |
+| `border`     | `WP_BORDER`      | `#2a2d36`   |
+| `shadow`     | `WP_SHADOW`      | `#08090d`   |
+| `rounding`   | `WP_ROUNDING`    | `10`        |
 
 ## Dependencies
 

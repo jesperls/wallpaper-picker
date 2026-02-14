@@ -16,11 +16,14 @@ let
 
   themeEnv = lib.filterAttrs (_: v: v != null) {
     WP_ACCENT = cfg.theme.accent;
+    WP_ACCENT2 = cfg.theme.accent2;
     WP_BG = cfg.theme.background;
     WP_SURFACE = cfg.theme.surface;
+    WP_SURFACE_ALT = cfg.theme.surfaceAlt;
     WP_TEXT = cfg.theme.text;
     WP_MUTED = cfg.theme.muted;
     WP_BORDER = cfg.theme.border;
+    WP_SHADOW = cfg.theme.shadow;
     WP_ROUNDING = toString cfg.theme.rounding;
   };
 
@@ -51,6 +54,11 @@ in
         default = null;
         description = "Accent color (hex). Falls back to built-in default if null.";
       };
+      accent2 = mkOption {
+        type = types.nullOr types.str;
+        default = null;
+        description = "Secondary accent color (hex). Falls back to built-in default if null.";
+      };
       background = mkOption {
         type = types.nullOr types.str;
         default = null;
@@ -60,6 +68,11 @@ in
         type = types.nullOr types.str;
         default = null;
         description = "Surface color (hex). Falls back to built-in default if null.";
+      };
+      surfaceAlt = mkOption {
+        type = types.nullOr types.str;
+        default = null;
+        description = "Alternate surface color (hex). Falls back to built-in default if null.";
       };
       text = mkOption {
         type = types.nullOr types.str;
@@ -75,6 +88,11 @@ in
         type = types.nullOr types.str;
         default = null;
         description = "Border color (hex). Falls back to built-in default if null.";
+      };
+      shadow = mkOption {
+        type = types.nullOr types.str;
+        default = null;
+        description = "Shadow color (hex). Falls back to built-in default if null.";
       };
       rounding = mkOption {
         type = types.int;
