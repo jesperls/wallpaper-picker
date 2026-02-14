@@ -61,9 +61,7 @@ GridView {
             let cacheDir = Quickshell.env("XDG_CACHE_HOME") || (Quickshell.env("HOME") + "/.cache");
 
             setProc.command = ["sh", "-c",
-                `hyprctl hyprpaper preload "${filePath}" 2>/dev/null; ` +
                 `hyprctl hyprpaper wallpaper "${mon},${filePath}"; ` +
-                `hyprctl hyprpaper unload unused 2>/dev/null; ` +
                 `mkdir -p "${cacheDir}/wallpaper-manager"; ` +
                 `echo "${filePath}" > "${cacheDir}/wallpaper-manager/${safeMon}.current"`
             ];
