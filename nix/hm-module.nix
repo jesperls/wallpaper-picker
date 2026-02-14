@@ -3,30 +3,29 @@ self:
   config,
   pkgs,
   lib,
-  osConfig,
   ...
 }:
 let
   inherit (pkgs.stdenv.hostPlatform) system;
   cfg = config.programs.wallpaperPicker;
-  colors = osConfig.mySystem.theme.colors;
-  rounding = osConfig.mySystem.theme.rounding;
 
   expandedWallpaperDir =
     if lib.hasPrefix "~" cfg.wallpaperDir
     then "${config.home.homeDirectory}${lib.removePrefix "~" cfg.wallpaperDir}"
     else cfg.wallpaperDir;
 
+  themeEnv = lib.filterAttrs (_: v: v != null) {
+    WP_ACCENT = cfg.theme.accent;
+    WP_BG = cfg.theme.background;
+    WP_SURFACE = cfg.theme.surface;
+    WP_TEXT = cfg.theme.text;
+    WP_MUTED = cfg.theme.muted;
+    WP_BORDER = cfg.theme.border;
+    WP_ROUNDING = toString cfg.theme.rounding;
+  };
+
   pickerPkg = cfg.package.override {
-    themeEnv = {
-      WP_ACCENT = colors.accent;
-      WP_BG = colors.background;
-      WP_SURFACE = colors.surface;
-      WP_TEXT = colors.text;
-      WP_MUTED = colors.muted;
-      WP_BORDER = colors.border;
-      WP_ROUNDING = toString rounding;
-    };
+    inherit themeEnv;
     wallpaperDir = expandedWallpaperDir;
   };
 in
@@ -44,6 +43,44 @@ in
       type = types.str;
       default = "~/Pictures/Wallpapers";
       description = "Directory containing wallpaper images.";
+    };
+
+    theme = {
+      accent = mkOption {
+        type = types.nullOr types.str;
+        default = null;
+        description = "Accent color (hex). Falls back to built-in default if null.";
+      };
+      background = mkOption {
+        type = types.nullOr types.str;
+        default = null;
+        description = "Background color (hex). Falls back to built-in default if null.";
+      };
+      surface = mkOption {
+        type = types.nullOr types.str;
+        default = null;
+        description = "Surface color (hex). Falls back to built-in default if null.";
+      };
+      text = mkOption {
+        type = types.nullOr types.str;
+        default = null;
+        description = "Text color (hex). Falls back to built-in default if null.";
+      };
+      muted = mkOption {
+        type = types.nullOr types.str;
+        default = null;
+        description = "Muted text color (hex). Falls back to built-in default if null.";
+      };
+      border = mkOption {
+        type = types.nullOr types.str;
+        default = null;
+        description = "Border color (hex). Falls back to built-in default if null.";
+      };
+      rounding = mkOption {
+        type = types.int;
+        default = 10;
+        description = "Corner rounding in pixels.";
+      };
     };
 
     hyprpaper.enable = mkOption {
