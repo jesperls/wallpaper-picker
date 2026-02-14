@@ -2,12 +2,15 @@
 
 A QuickShell-based wallpaper picker and manager for Hyprland. Provides a GUI grid picker and CLI wallpaper cycling, backed by hyprpaper.
 
+## Demo
+
+https://github.com/user-attachments/assets/c2801108-db93-43ce-b630-1e72a7759082
+
 ## Features
 
 - Visual grid picker as a Wayland overlay (keyboard and mouse navigation)
 - Per-monitor wallpaper cycling
 - Wallpaper state persisted across reboots
-- Theme-aware (colors injected from your NixOS theme)
 - Responsive layout that adapts to different monitor sizes and orientations
 
 ## Usage
