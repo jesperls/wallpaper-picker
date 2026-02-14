@@ -43,10 +43,6 @@ GridView {
     delegate: WallpaperItem {
         required property int index
         required property var model
-        required property string fileName
-        required property string filePath
-        required property string fileURL
-
         width: gridView.totalItemWidth
         height: gridView.totalItemHeight
         thumbWidth: gridView.thumbWidth
@@ -56,10 +52,10 @@ GridView {
         filePath: {
              // FolderListModel usually returns file URL in filePath role or fileURL role depending on Qt version
              // Let's safe-guard. If model.fileURL exists, use it.
-             let url = model.fileURL || ("file://" + gridView.wallpaperDir + "/" + fileName);
+             let url = model.fileURL || ("file://" + gridView.wallpaperDir + "/" + model.fileName);
              return url.toString().replace(/^file:\/\//, "");
         }
-        fileUrl: model.fileURL ? model.fileURL.toString() : ("file://" + gridView.wallpaperDir + "/" + fileName)
+        fileUrl: model.fileURL ? model.fileURL.toString() : ("file://" + gridView.wallpaperDir + "/" + model.fileName)
         fileName: model.fileName
         
         isSelected: gridView.currentIndex === index

@@ -60,7 +60,7 @@ ShellRoot {
             // Prevent clicks on the dialog from closing the window
             MouseArea {
                 anchors.fill: parent
-                hoverEnabled: true,
+                hoverEnabled: true
                 onClicked: {} // Swallow clicks
             }
 
