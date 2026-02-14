@@ -47,8 +47,8 @@ ShellRoot {
 
         Rectangle {
             anchors.centerIn: parent
-            width: 1100
-            height: 700
+            width: Math.min(parent.width * 0.85, 1400)
+            height: Math.min(parent.height * 0.85, 900)
             radius: root.rounding
             color: root.bgColor
             border.color: root.borderColor

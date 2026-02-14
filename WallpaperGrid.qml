@@ -20,7 +20,10 @@ GridView {
     readonly property int thumbHeight: 160
     readonly property int itemPadding: 12
 
-    cellWidth: thumbWidth + itemPadding * 2
+    readonly property int baseItemWidth: thumbWidth + itemPadding * 2
+    readonly property int columns: Math.max(1, Math.floor(width / baseItemWidth))
+
+    cellWidth: width / columns
     cellHeight: thumbHeight + 30 + itemPadding * 2
     clip: true
     boundsBehavior: Flickable.StopAtBounds
