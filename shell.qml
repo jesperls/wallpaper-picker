@@ -2,7 +2,6 @@ import Quickshell
 import Quickshell.Wayland
 import Quickshell.Io
 import QtQuick
-import QtQuick.Layouts
 
 ShellRoot {
     id: root
@@ -70,7 +69,6 @@ ShellRoot {
                 surfaceColor: root.surfaceColor
                 textColor: root.textColor
                 mutedColor: root.mutedColor
-                borderColor: root.borderColor
                 rounding: root.rounding
                 focus: true
             }

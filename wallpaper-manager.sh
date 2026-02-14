@@ -89,5 +89,5 @@ case "${1:-cycle}" in
     WP_MONITOR=$(focused_output)
     exec wallpaper-picker
     ;;
-  *)     cycle ;;
+  *)     echo "unknown command: ${1:-}" >&2; exit 1 ;;
 esac

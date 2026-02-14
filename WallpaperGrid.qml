@@ -1,6 +1,5 @@
 pragma ComponentBehavior: Bound
 
-import Quickshell
 import Quickshell.Io
 import QtQuick
 import QtQuick.Controls
@@ -15,7 +14,6 @@ GridView {
     required property string surfaceColor
     required property string textColor
     required property string mutedColor
-    required property string borderColor
     required property int rounding
 
     readonly property int thumbWidth: 280
@@ -56,15 +54,7 @@ GridView {
             gridView.currentIndex = index;
             let mon = gridView.focusedMonitor;
             if (!mon) return;
-
-            let safeMon = mon.replace(/\//g, '_');
-            let cacheDir = Quickshell.env("XDG_CACHE_HOME") || (Quickshell.env("HOME") + "/.cache");
-
-            setProc.command = ["sh", "-c",
-                `hyprctl hyprpaper wallpaper "${mon},${filePath}"; ` +
-                `mkdir -p "${cacheDir}/wallpaper-manager"; ` +
-                `echo "${filePath}" > "${cacheDir}/wallpaper-manager/${safeMon}.current"`
-            ];
+            setProc.command = ["wallpaper-manager", "set", mon, filePath];
             setProc.running = true;
         }
     }
