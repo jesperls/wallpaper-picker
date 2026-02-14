@@ -35,9 +35,9 @@ ShellRoot {
         focusable: true
         color: "transparent"
 
-        WaylandLayershell.layer: WaylandLayer.Overlay
-        WaylandLayershell.namespace: "wallpaper-picker"
-        WaylandLayershell.keyboardFocus: KeyboardFocus.OnDemand
+        WlrLayershell.layer: WlrLayer.Overlay
+        WlrLayershell.namespace: "wallpaper-picker"
+        WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
 
         // Semi-transparent backdrop
         Rectangle {
