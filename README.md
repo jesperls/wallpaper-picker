@@ -35,11 +35,6 @@ programs.wallpaperPicker = {
   enable = true;
   wallpaperDir = "~/Pictures/Wallpapers"; # default
   hyprpaper.enable = true;                # default, manages hyprpaper service
-  keybinds = {
-    enable = true;                        # default
-    cycle = "$mainMod SHIFT, W";          # default
-    pick = "$mainMod CTRL, W";            # default
-  };
   theme = {
     accent = "#d47fa6";
     accent2 = "#e3b17a";
@@ -55,7 +50,16 @@ programs.wallpaperPicker = {
 };
 ```
 
-The module handles everything: hyprpaper service, keybinds, wallpaper restore on login.
+The module handles hyprpaper service and wallpaper restore on login. Configure Hyprland keybinds in your own Hyprland config.
+
+Example Hyprland binds:
+
+```nix
+wayland.windowManager.hyprland.settings.bind = [
+  "$mainMod SHIFT, W, exec, wallpaper-manager cycle"
+  "$mainMod CTRL, W, exec, wallpaper-manager pick"
+];
+```
 
 ### CLI
 

@@ -107,21 +107,6 @@ in
       description = "Whether to enable and configure hyprpaper.";
     };
 
-    keybinds = {
-      enable = mkEnableOption "wallpaper keybinds in Hyprland" // { default = true; };
-
-      cycle = mkOption {
-        type = types.str;
-        default = "$mainMod SHIFT, W";
-        description = "Keybind for cycling wallpapers.";
-      };
-
-      pick = mkOption {
-        type = types.str;
-        default = "$mainMod CTRL, W";
-        description = "Keybind for opening the wallpaper picker.";
-      };
-    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -133,12 +118,8 @@ in
       };
     };
 
-    wayland.windowManager.hyprland.settings = lib.mkIf cfg.keybinds.enable {
-      bind = [
-        "${cfg.keybinds.cycle}, exec, wallpaper-manager cycle"
-        "${cfg.keybinds.pick}, exec, wallpaper-manager pick"
-      ];
-      exec-once = lib.mkIf cfg.hyprpaper.enable [
+    wayland.windowManager.hyprland.settings = lib.mkIf cfg.hyprpaper.enable {
+      exec-once = [
         "wallpaper-manager init"
       ];
     };
