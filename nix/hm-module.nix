@@ -14,17 +14,20 @@ let
     then "${config.home.homeDirectory}${lib.removePrefix "~" cfg.wallpaperDir}"
     else cfg.wallpaperDir;
 
+  baseColors = if cfg.baseColors != null then cfg.baseColors else cfg.theme;
+  baseRounding = if cfg.baseColors != null then cfg.baseRounding else cfg.theme.rounding;
+
   themeEnv = lib.filterAttrs (_: v: v != null) {
-    WP_ACCENT = cfg.theme.accent;
-    WP_ACCENT2 = cfg.theme.accent2;
-    WP_BG = cfg.theme.background;
-    WP_SURFACE = cfg.theme.surface;
-    WP_SURFACE_ALT = cfg.theme.surfaceAlt;
-    WP_TEXT = cfg.theme.text;
-    WP_MUTED = cfg.theme.muted;
-    WP_BORDER = cfg.theme.border;
-    WP_SHADOW = cfg.theme.shadow;
-    WP_ROUNDING = toString cfg.theme.rounding;
+    WP_ACCENT = baseColors.accent or null;
+    WP_ACCENT2 = baseColors.accent2 or null;
+    WP_BG = baseColors.background or null;
+    WP_SURFACE = baseColors.surface or null;
+    WP_SURFACE_ALT = baseColors.surfaceAlt or null;
+    WP_TEXT = baseColors.text or null;
+    WP_MUTED = baseColors.muted or null;
+    WP_BORDER = baseColors.border or null;
+    WP_SHADOW = baseColors.shadow or null;
+    WP_ROUNDING = toString baseRounding;
   };
 
   pickerPkg = cfg.package.override {
@@ -46,6 +49,18 @@ in
       type = types.str;
       default = "~/Pictures/Wallpapers";
       description = "Directory containing wallpaper images.";
+    };
+
+    baseColors = mkOption {
+      type = types.nullOr (types.attrsOf types.str);
+      default = null;
+      description = "Base theme colors attrset (accent, accent2, background, surface, surfaceAlt, text, muted, border, shadow). Shorthand alternative to setting theme.* individually.";
+    };
+
+    baseRounding = mkOption {
+      type = types.int;
+      default = 10;
+      description = "Corner rounding when using baseColors. Ignored if baseColors is null.";
     };
 
     theme = {

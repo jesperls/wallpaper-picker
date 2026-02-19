@@ -23,21 +23,19 @@ Item {
 
     property bool hovered: false
 
-    readonly property real accentR: parseInt(accentColor.substring(1, 3), 16) / 255
-    readonly property real accentG: parseInt(accentColor.substring(3, 5), 16) / 255
-    readonly property real accentB: parseInt(accentColor.substring(5, 7), 16) / 255
+    readonly property color accent: accentColor
 
     Rectangle {
         anchors.fill: parent
         anchors.margins: 4
         radius: root.rounding / 2
         color: root.hovered
-            ? Qt.rgba(root.accentR, root.accentG, root.accentB, 0.08)
+            ? Qt.rgba(root.accent.r, root.accent.g, root.accent.b, 0.08)
             : "transparent"
         border.color: root.isSelected
             ? root.accentColor
             : (root.hovered
-                ? Qt.rgba(root.accentR, root.accentG, root.accentB, 0.3)
+                ? Qt.rgba(root.accent.r, root.accent.g, root.accent.b, 0.3)
                 : "transparent")
         border.width: 2
 

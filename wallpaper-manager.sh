@@ -50,7 +50,7 @@ cycle() {
 
 init() {
   # Wait for hyprpaper socket to be available
-  for _ in $(seq 1 50); do
+  for _ in {1..50}; do
     hyprctl hyprpaper wallpaper ",invalid" &>/dev/null && break
     sleep 0.1
   done

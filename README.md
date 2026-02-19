@@ -35,7 +35,7 @@ programs.wallpaperPicker = {
   enable = true;
   wallpaperDir = "~/Pictures/Wallpapers"; # default
   hyprpaper.enable = true;                # default, manages hyprpaper service
-  theme = {
+  baseColors = {
     accent = "#d47fa6";
     accent2 = "#e3b17a";
     background = "#0f1117";
@@ -45,8 +45,8 @@ programs.wallpaperPicker = {
     muted = "#b3adb9";
     border = "#2a2d36";
     shadow = "#08090d";
-    rounding = 10;                        # default
   };
+  baseRounding = 10;
 };
 ```
 
