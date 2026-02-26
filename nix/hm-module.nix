@@ -10,9 +10,10 @@ let
   cfg = config.programs.wallpaperPicker;
 
   expandedWallpaperDir =
-    if lib.hasPrefix "~" cfg.wallpaperDir
-    then "${config.home.homeDirectory}${lib.removePrefix "~" cfg.wallpaperDir}"
-    else cfg.wallpaperDir;
+    if lib.hasPrefix "~" cfg.wallpaperDir then
+      "${config.home.homeDirectory}${lib.removePrefix "~" cfg.wallpaperDir}"
+    else
+      cfg.wallpaperDir;
 
   baseColors = if cfg.baseColors != null then cfg.baseColors else cfg.theme;
   baseRounding = if cfg.baseColors != null then cfg.baseRounding else cfg.theme.rounding;

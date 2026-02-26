@@ -42,6 +42,7 @@ cycle() {
 
   local idx=-1
   [ -f "$state_file" ] && read -r idx < "$state_file"
+  [[ "$idx" =~ ^-?[0-9]+$ ]] || idx=-1
   idx=$(( (idx + 1) % ${#files[@]} ))
   echo "$idx" > "$state_file"
 
