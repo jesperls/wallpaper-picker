@@ -135,8 +135,17 @@ in
     };
 
     wayland.windowManager.hyprland.settings = lib.mkIf cfg.hyprpaper.enable {
-      exec-once = [
-        "wallpaper-manager init"
+      on = [
+        {
+          _args = [
+            "hyprland.start"
+            (lib.generators.mkLuaInline ''
+              function()
+                hl.exec_cmd("wallpaper-manager init")
+              end
+            '')
+          ];
+        }
       ];
     };
 
