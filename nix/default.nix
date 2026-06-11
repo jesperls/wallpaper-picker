@@ -3,8 +3,6 @@
   stdenvNoCC,
   makeWrapper,
   quickshell,
-  hyprland,
-  hyprpaper,
   jq,
   coreutils,
   findutils,
@@ -24,9 +22,9 @@ stdenvNoCC.mkDerivation {
 
   installPhase =
     let
+      # hyprctl is intentionally not bundled: it must match the running
+      # compositor, and the session always has it on PATH.
       runtimeDeps = [
-        hyprland
-        hyprpaper
         jq
         coreutils
         findutils

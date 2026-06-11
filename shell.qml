@@ -1,6 +1,6 @@
 import Quickshell
 import Quickshell.Wayland
-import Quickshell.Io
+import Quickshell.Hyprland
 import QtQuick
 
 ShellRoot {
@@ -21,16 +21,7 @@ ShellRoot {
         return dir.replace(/^~/, Quickshell.env("HOME"));
     }
 
-    property string focusedMonitor: Quickshell.env("WP_MONITOR") || ""
-
-    Process {
-        id: monitorDetect
-        command: ["sh", "-c", "hyprctl monitors -j | jq -r '.[] | select(.focused==true) | .name'"]
-        running: !root.focusedMonitor
-        stdout: SplitParser {
-            onRead: data => { root.focusedMonitor = data.trim(); }
-        }
-    }
+    readonly property string focusedMonitor: Quickshell.env("WP_MONITOR") || (Hyprland.focusedMonitor?.name ?? "")
 
     PanelWindow {
         anchors { top: true; bottom: true; left: true; right: true }

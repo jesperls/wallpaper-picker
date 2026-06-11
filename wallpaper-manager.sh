@@ -23,7 +23,7 @@ list_wallpapers() {
 set_wallpaper() {
   local output="$1" file="$2"
   echo "$file" > "$cache_dir/${output//\//_}.current"
-  hyprctl hyprpaper wallpaper "$output,$file"
+  hyprctl hyprpaper reload "$output,$file"
 }
 
 cycle() {
@@ -52,7 +52,7 @@ cycle() {
 init() {
   # Wait for hyprpaper socket to be available
   for _ in {1..50}; do
-    hyprctl hyprpaper wallpaper ",invalid" &>/dev/null && break
+    hyprctl hyprpaper listloaded &>/dev/null && break
     sleep 0.1
   done
   for output in $(all_outputs); do
